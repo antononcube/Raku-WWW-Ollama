@@ -24,12 +24,11 @@ class WWW::Ollama::Client {
         $!config.set({'use-system-ollama' => $use-system-ollama}) if $use-system-ollama.defined;
         $!config.set({'start-ollama' => $start-ollama}) if $start-ollama.defined;
 
-        note (:$!config);
         $!http //= WWW::Ollama::HTTPClient.new(
             host => $!config.get('host', '127.0.0.1'),
             port => $!config.get('port', 11435),
         );
-        note (:$!http);
+
         $!resolver //= WWW::Ollama::ExecResolver.new(:$!config);
         $!normalizer //= WWW::Ollama::RequestNormalizer.new(:$!http);
         $!process //= WWW::Ollama::ProcessManager.new(
