@@ -15,7 +15,7 @@ class WWW::Ollama::Client {
     has WWW::Ollama::ExecResolver $.resolver;
     has WWW::Ollama::RequestNormalizer $.normalizer;
     has WWW::Ollama::StreamingParser $.parser .= new;
-    has WWW::Ollama::ProcessManager $.process;
+    has WWW::Ollama::ProcessManager $.process handles <start stop>;
 
     submethod BUILD(:$host, :$port, :$use-system-ollama, :$start-ollama) {
         $!config //= WWW::Ollama::Config.new;
@@ -56,8 +56,6 @@ class WWW::Ollama::Client {
 
     method ollama-is-running() { $!process.is-running }
     method ensure-ollama-running(:$use-system) { $!process.ensure-running(:$use-system) }
-    method start(:$use-system) { $!process.start(:$use-system) }
-    method stop() { $!process.stop }
 
     # API wrappers
     method status(:$ensure-running = True) {
