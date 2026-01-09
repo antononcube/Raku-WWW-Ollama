@@ -2,7 +2,7 @@
 
 Raku package for accessing [Ollama](https://ollama.com) models.
 
-The implementation is based in the Ollama's API and observing (and trying to imitate) the 
+The implementation is based in the Ollama's API, [Ol1], and observing (and trying to imitate) the 
 Ollama client of Wolfram Language.
 
 -----
