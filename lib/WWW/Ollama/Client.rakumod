@@ -54,7 +54,7 @@ class WWW::Ollama::Client {
     multi method use-system-ollama() { $!resolver.use-system }
     multi method use-system-ollama(Bool $value) { $!config.set('use-system-ollama' => $value) }
 
-    method ollama-running() { $!process.running }
+    method ollama-is-running() { $!process.is-running }
     method ensure-ollama-running(:$use-system) { $!process.ensure-running(:$use-system) }
     method start(:$use-system) { $!process.start(:$use-system) }
     method stop() { $!process.stop }
@@ -62,21 +62,32 @@ class WWW::Ollama::Client {
     # API wrappers
     method status(:$ensure-running = True) {
         self.ensure-ollama-running if $ensure-running;
-        $!http.get('/api/ps');
+        my %res = $!http.get('');
+        return %res<decoded-content> // %res<status> // "Can't process http request.";
     }
 
+    #| List models that are currently loaded into memory.
+    method list-running-models(:$ensure-running = True) {
+        self.ensure-ollama-running if $ensure-running;
+        my %res = $!http.get('/api/ps');
+        self.shape-response('models', %res);
+    }
+
+    #| List models that are available locally.
     method list-models(:$ensure-running = True) {
         self.ensure-ollama-running if $ensure-running;
         my %res = $!http.get('/api/tags');
         self.shape-response('models', %res);
     }
 
+    #| Show information about a model including details, modelfile, template, parameters, license, system prompt.
     method model-info(Str :$model!, :$verbose = False, :$ensure-running = True) {
         self.ensure-ollama-running if $ensure-running;
         my %res = $!http.post('/api/show', { model => $model, verbose => $verbose });
         self.shape-response('model-info', %res);
     }
 
+    #| Download a model from the ollama library.
     method pull-model(Str :$model!, :$stream = False, :$ensure-running = True) {
         self.ensure-ollama-running if $ensure-running;
         my %payload = :$model, :$stream;
@@ -88,12 +99,14 @@ class WWW::Ollama::Client {
         self.shape-response('pull', %res);
     }
 
+    #| Delete a model and its data.
     method delete-model(Str :$model!, :$ensure-running = True) {
         self.ensure-ollama-running if $ensure-running;
         my %res = $!http.delete('/api/delete', { model => $model });
         self.shape-response('delete', %res);
     }
 
+    #| Create a model from: another model, a safetensors directory, or a GGUF file.
     method create-model(:$name!, :$modelfile!, :$path?, :$stream = False, :$ensure-running = True) {
         self.ensure-ollama-running if $ensure-running;
         my %payload = :$name, :$modelfile, :$path, :$stream;
@@ -104,29 +117,34 @@ class WWW::Ollama::Client {
         self.shape-response('create', $!http.post('/api/create', %payload));
     }
 
+    #| Check if a blob exists.
     method blob-exists(Str :$digest!, :$ensure-running = True) {
         self.ensure-ollama-running if $ensure-running;
         my %res = $!http.get("/api/blobs/sha256:$digest");
         %res<status> && %res<status> == 200;
     }
 
+    #| Create a blob exists.
     method create-blob(Str :$digest!, :$content!, :$ensure-running = True) {
         self.ensure-ollama-running if $ensure-running;
         my %res = $!http.post("/api/blobs/sha256:$digest", { content => $content });
         self.shape-response('blob', %res);
     }
 
+    #| Retrieve the Ollama version.
     method version(:$ensure-running = True) {
         self.ensure-ollama-running if $ensure-running;
         my %res = $!http.get('/api/version');
         self.shape-response('version', %res);
     }
 
+    #| Generate a completion.
     multi method completion(Str:D $prompt, :$ensure-running = True) {
         my %body = model => 'gemma3:1b', :$prompt, :!stream;
         return self.completion(%body, :$ensure-running);
     }
 
+    #| Generate a completion response for a given prompt with a provided model.
     multi method completion(%params is copy, :$ensure-running = True) {
         self.ensure-ollama-running if $ensure-running;
         my %payload = $!normalizer.normalize('completion', %params);
@@ -135,6 +153,7 @@ class WWW::Ollama::Client {
         return self.do-chat-or-completion('/api/generate', %payload, $stream, $call);
     }
 
+    #| Generate the next message in a chat with a provided model.
     method chat(%params is copy, :$ensure-running = True) {
         self.ensure-ollama-running if $ensure-running;
         my %payload = $!normalizer.normalize('chat', %params);
@@ -143,6 +162,7 @@ class WWW::Ollama::Client {
         return self.do-chat-or-completion('/api/chat', %payload, $stream, $call);
     }
 
+    #| Generate embeddings from a model.
     method embedding(%params is copy, :$ensure-running = True) {
         self.ensure-ollama-running if $ensure-running;
         my %payload = $!normalizer.normalize('embedding', %params);
@@ -218,9 +238,42 @@ class WWW::Ollama::Client {
                 };
             }
             when 'models' { return %data<models> // [] }
-            default      { return %data }
+            default       { return %data }
         }
     }
 
     method call-id($prefix) { "$prefix-" ~ DateTime.now.posix ~ "-" ~ (1000 + (rand * 100000).Int) }
+
+    #------------------------------------------------------
+    # Representation
+    #------------------------------------------------------
+    #| To Hash
+    multi method Hash(::?CLASS:D:-->Hash) {
+        return
+                {
+                    :$!config,
+                    :$!http,
+                    :$!resolver,
+                    :$!normalizer,
+                    :$!parser,
+                    :$!process,
+                };
+    }
+
+    #| To string
+    multi method Str(::?CLASS:D:-->Str) {
+        return self.gist;
+    }
+
+    #| To gist
+    multi method gist(::?CLASS:D:-->Str) {
+        my @spec =
+                base-url => $!http.base-url,
+                ollama-is-running => self.ollama-is-running,
+                |self.version,
+                models-in-memory => self.list-running-models.elems,
+                local-models => self.list-models.elems;
+                #status => self.status<response>;
+        return 'Ollama::Client' ~ @spec.List.raku;
+    }
 }
