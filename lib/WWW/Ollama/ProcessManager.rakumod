@@ -17,7 +17,7 @@ class WWW::Ollama::ProcessManager {
     multi method port(Int $port) { $!http.port = $port; }
     method base() { $!http.host ~ ':' ~ $!http.port }
 
-    method running() {
+    method is-running() {
         try {
             my %res = $.http.get('/api/ps');
             %res<status> && %res<status> == 200;
@@ -27,7 +27,7 @@ class WWW::Ollama::ProcessManager {
     }
 
     method ensure-running(:$use-system) {
-        return True if self.running();
+        return True if self.is-running();
         return Failure.new(:message("Ollama not running and auto-start disabled")) unless $!start-on-missing;
         self.start(:$use-system);
     }
@@ -47,9 +47,9 @@ class WWW::Ollama::ProcessManager {
         while $waited < 30 {
             sleep 0.2;
             $waited += 0.2;
-            last if self.running();
+            last if self.is-running();
         }
-        return self.running() ?? True !! Failure.new(:message("Failed to start ollama on {self.base}"));
+        return self.is-running() ?? True !! Failure.new(:message("Failed to start ollama on {self.base}"));
     }
 
     method stop() {
