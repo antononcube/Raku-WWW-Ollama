@@ -17,12 +17,13 @@ class WWW::Ollama::Client {
     has WWW::Ollama::StreamingParser $.parser .= new;
     has WWW::Ollama::ProcessManager $.process handles <start stop>;
 
-    submethod BUILD(:$host, :$port, :$use-system-ollama, :$start-ollama) {
+    submethod BUILD(:$host, :$port, :$use-system-ollama, :$start-ollama, Bool:D :$echo = False) {
         $!config //= WWW::Ollama::Config.new;
         $!config.set({'host' => $host}) if $host;
         $!config.set({'port' => $port}) if $port.defined;
         $!config.set({'use-system-ollama' => $use-system-ollama}) if $use-system-ollama.defined;
         $!config.set({'start-ollama' => $start-ollama}) if $start-ollama.defined;
+        $!config.set({:$echo});
 
         $!http //= WWW::Ollama::HTTPClient.new(
             host => $!config.get('host', '127.0.0.1'),
@@ -36,6 +37,7 @@ class WWW::Ollama::Client {
             :$!http,
             start-on-missing => $!config.get('start-ollama', True),
             context-length   => $!config.get('context-length'),
+            :$echo
         );
     }
 

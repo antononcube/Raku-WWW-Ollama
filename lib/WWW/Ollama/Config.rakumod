@@ -24,6 +24,7 @@ class WWW::Ollama::Config {
             use-system-ollama  => True,
             start-ollama       => True,
             context-length     => Nil,
+            echo               => False,
         };
     }
 

@@ -8,6 +8,7 @@ class WWW::Ollama::ProcessManager {
     has WWW::Ollama::ExecResolver $.resolver;
     has WWW::Ollama::HTTPClient $.http;
     has Bool $.start-on-missing is rw = True;
+    has Bool $.echo is rw = False;
     has $.context-length is rw;
     has Proc::Async $!proc;
 
@@ -32,7 +33,7 @@ class WWW::Ollama::ProcessManager {
         self.start(:$use-system);
     }
 
-    method start(:$use-system) {
+    method start(:$use-system, Bool:D :$echo = False) {
         return True if $!proc && $!proc.started;
         my $exec = $.resolver.resolve(:prefer-system($use-system));
         return Failure.new(:message("Could not resolve ollama executable")) unless $exec;
@@ -40,8 +41,8 @@ class WWW::Ollama::ProcessManager {
         %env<OLLAMA_HOST> = self.base;
         %env<OLLAMA_CONTEXT_LENGTH> = $!context-length with $!context-length;
         $!proc = Proc::Async.new($exec.Str, 'serve', :%env);
-        $!proc.stdout.tap({ note "[ollama] $_" if $_.chars });
-        $!proc.stderr.tap({ note "[ollama] $_" if $_.chars });
+        $!proc.stdout.tap({ note "[ollama] $_" if $_.chars }) if $!echo;
+        $!proc.stderr.tap({ note "[ollama] $_" if $_.chars }) if $!echo;
         $!proc.start;
         my $waited = 0;
         while $waited < 30 {
