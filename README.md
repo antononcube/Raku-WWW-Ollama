@@ -37,7 +37,12 @@ For detailed usage examples see:
 - [ ] TODO Implementation
   - [X] DONE Reasonable gists for the different objects.
   - [ ] TODO Refactor to simpler code
+  - [ ] TODO Functional interface 
+    - I.e. without the need to explicitly make a client object.
 - [ ] TODO CLI
+  - [X] DONE MVP
+  - [ ] TODO Detect JSON file with valid chat records
+  - [ ] TODO Detect JSON string with valid chat records
 - [ ] TODO Unit tests
 - [ ] TODO Documentation
 
