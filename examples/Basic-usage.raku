@@ -3,9 +3,8 @@ use v6.d;
 
 use WWW::Ollama::Client;
 
-#.say for %*ENV;
-
-my $ollama = WWW::Ollama::Client.new(host => 'localhost', :11434port);
+#my $ollama = WWW::Ollama::Client.new(host => 'localhost', :11434port);
+my $ollama = WWW::Ollama::Client.new;
 
 say (:$ollama);
 
