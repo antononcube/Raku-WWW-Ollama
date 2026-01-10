@@ -1,5 +1,11 @@
 # WWW::Ollama
 
+[![MacOS](https://github.com/antononcube/Raku-WWW-Ollama/actions/workflows/macos.yml/badge.svg)](https://github.com/antononcube/Raku-WWW-Ollama/actions/workflows/macos.yml)
+[![Linux](https://github.com/antononcube/Raku-WWW-Ollama/actions/workflows/linux.yml/badge.svg)](https://github.com/antononcube/Raku-WWW-Ollama/actions/workflows/linux.yml)
+[![Win64](https://github.com/antononcube/Raku-WWW-Ollama/actions/workflows/windows.yml/badge.svg)](https://github.com/antononcube/Raku-WWW-Ollama/actions/workflows/windows.yml)
+[![https://raku.land/zef:antononcube/WWW::Ollama](https://raku.land/zef:antononcube/WWW::Ollama/badges/version)](https://raku.land/zef:antononcube/WWW::Ollama)
+
+
 Raku package for accessing [Ollama](https://ollama.com) models.
 
 The implementation is based in the Ollama's API, [Ol1], and observing (and trying to imitate) the 
