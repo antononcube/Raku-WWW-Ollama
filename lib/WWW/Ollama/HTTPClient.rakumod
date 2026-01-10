@@ -17,7 +17,6 @@ class WWW::Ollama::HTTPClient {
     submethod BUILD(:$!host = Whatever, :$!port = Whatever, :$!scheme = Whatever, :$!api-key = Whatever) {
         without $!host { $!host = '127.0.0.1' }
         die "The host spec is expected to be a string or Whatever" unless $!host ~~ Str:D;
-        say (:$!scheme, :$!host, :$!port);
         without $!port {
             $!port = do given $!host {
                 $!port = do when $_ ~~ /^ 'https://' / {
@@ -33,10 +32,8 @@ class WWW::Ollama::HTTPClient {
                 }
             }
         }
-        say (:$!scheme, :$!host, :$!port);
         $!scheme //= 'http';
         $!host .= subst( $!scheme ~ '://');
-        say (:$!scheme, :$!host, :$!port);
     }
 
     #------------------------------------------------------
