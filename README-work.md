@@ -58,6 +58,10 @@ ollama-client --help
 
 - [ ] TODO Implementation
   - [X] DONE Reasonable gists for the different objects.
+  - [ ] TODO Authorization
+    - [X] DONE Initialize the client with an API key and use that key
+    - [ ] TODO Pass & use an API key per client method call 
+    - [ ] TODO Automatic discovery and use of OLLAMA_API_KEY 
   - [ ] TODO Refactor to simpler code
   - [ ] TODO Functional interface 
     - I.e. without the need to explicitly make a client object.
@@ -65,8 +69,17 @@ ollama-client --help
   - [X] DONE MVP
   - [ ] TODO Detect JSON file with valid chat records
   - [ ] TODO Detect JSON string with valid chat records
-- [ ] TODO Unit tests
+- [X] DONE Unit tests
+  - [X] DONE Client object creation 
+  - [X] DONE Completion generation
+  - [X] DONE Chat generation
+  - [X] DONE Embeddings
 - [ ] TODO Documentation
+  - [X] DONE Basic usage script
+  - [X] DONE Basic usage notebook
+  - [ ] TODO Using via the LLM-function framework
+  - [ ] TODO Benchmarking
+  - [ ] TODO Demo video
 
 -----
 
