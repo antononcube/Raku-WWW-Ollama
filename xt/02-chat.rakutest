@@ -1,0 +1,23 @@
+use v6.d;
+use WWW::Ollama::Client;
+use Test;
+
+my $ollama = WWW::Ollama::Client.new;
+
+subtest {
+    my %body =
+            model => 'gemma3:1b',
+            messages => [{role => "user", content => "How many people live in different states of India?"},]
+            ;
+
+    my $ans = $ollama.chat(%body);
+
+    isa-ok $ans, Map:D, 'expected answer type';
+
+    isa-ok $ans<content>, Str:D, 'answer content type';
+
+    is $ans<content>.chars ≥ 100, True, 'answer content length';
+
+}, 'chat generation, single message';
+
+done-testing;

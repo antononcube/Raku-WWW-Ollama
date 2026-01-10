@@ -1,0 +1,24 @@
+use v6.d;
+use WWW::Ollama::Client;
+use Test;
+
+my $ollama = WWW::Ollama::Client.new;
+
+subtest {
+    my %body =
+            model => 'gemma3:1b',
+            prompt => "How many people live in Brazil?",
+            :!stream
+            ;
+
+    my $ans = $ollama.completion(%body);
+
+    isa-ok $ans, Map:D, 'expected answer type';
+
+    isa-ok $ans<content>, Str:D, 'answer content type';
+
+    is $ans<content>.chars ≥ 100, True, 'answer content length';
+
+}, 'completion generation';
+
+done-testing;

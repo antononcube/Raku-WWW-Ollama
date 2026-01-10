@@ -1,0 +1,23 @@
+use v6.d;
+use WWW::Ollama::Client;
+use Test;
+
+my $ollama = WWW::Ollama::Client.new;
+
+subtest {
+    my %body =
+            model => 'nomic-embed-text',
+            input => ["What is the distance from Earth to Mars?", "Distance to the Moon?", "How far is the Sun?"],
+            ;
+
+    my $ans = $ollama.embedding(%body);
+
+    isa-ok $ans, Map:D, 'expected embeddings request type';
+
+    isa-ok $ans<embeddings>, Array:D, 'embeddings request content type';
+
+    is $ans<embeddings>.elems == 3, True, 'embeddings array length';
+
+}, 'embeddings request';
+
+done-testing;
