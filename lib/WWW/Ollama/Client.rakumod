@@ -280,6 +280,6 @@ class WWW::Ollama::Client {
                 models-in-memory => self.list-running-models.elems,
                 local-models => self.list-models.elems;
                 #status => self.status<response>;
-        return 'Ollama::Client' ~ @spec.List.raku;
+        return 'WWW::Ollama::Client' ~ @spec.List.raku;
     }
 }
