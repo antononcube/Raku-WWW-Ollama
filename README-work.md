@@ -45,14 +45,6 @@ Here is the usage message:
 ```shell
 ollama-client --help
 ```
-```
-# Usage:
-#   ollama-client [<words> ...] [--path=<Str>] [-m|--model=<Str>] [-f|--format=<Str>] -- Ollama client invocation.
-#   
-#     --path=<Str>         Path, one of 'completion', 'chat', 'embedding', 'model-info', 'list-models', or 'list-running-models'. [default: 'completion']
-#     -m|--model=<Str>     Model to use. [default: 'gemma3:1b']
-#     -f|--format=<Str>    Format of the result; one of "json", "hash", "values", or "Whatever". [default: 'Whatever']
-```
 
 -----
 
