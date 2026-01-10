@@ -1,0 +1,38 @@
+use v6.d;
+use WWW::Ollama::Client;
+use Test;
+
+## 1
+subtest {
+    my $ollama = WWW::Ollama::Client.new;
+    is $ollama.http.port, 11434, 'expected port';
+    is $ollama.http.host, '127.0.0.1', 'expected host';
+    is $ollama.http.scheme, 'http', 'expected scheme';
+}, 'default connection';
+
+#`[
+## 2
+subtest {
+
+    sink my $OLLAMA_API_KEY=<your-test-Ollama-key-here>;
+
+    my $ollama = WWW::Ollama::Client.new(
+            host => "https://ollama.com",
+            #:443port,
+            api-key => $OLLAMA_API_KEY
+            );
+    is $ollama.http.port, 443, 'expected port';
+    is $ollama.http.host, 'ollama.com', 'expected host';
+    is $ollama.http.scheme, 'https', 'expected scheme';
+
+    $ollama = WWW::Ollama::Client.new(
+            host => "http://ollama.com",
+            api-key => $OLLAMA_API_KEY
+            );
+    is $ollama.http.port, 80, 'expected port';
+    is $ollama.http.host, 'ollama.com', 'expected host';
+    is $ollama.http.scheme, 'http', 'expected scheme';
+}, 'Ollama server connection';
+]
+
+done-testing;
