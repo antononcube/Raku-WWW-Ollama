@@ -1,0 +1,9 @@
+use v6.d;
+use WWW::Ollama::Client;
+use Test;
+
+ok WWW::Ollama::Client.new;
+
+isa-ok WWW::Ollama::Client.new(host => 'localhost', :11434port), WWW::Ollama::Client:D;
+
+done-testing;
