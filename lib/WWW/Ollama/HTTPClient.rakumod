@@ -46,7 +46,7 @@ class WWW::Ollama::HTTPClient {
     method get(Str:D $path, :%headers = {}) {
         my $response = HTTP::Tiny.new.get(self.base-url ~ $path);
         # Does headers .get take headers argument?
-        # %headers<Authorization> = "Bearer $!api-key" with $!api-key;
+        # %headers<Authorization> //= "Bearer $!api-key" with $!api-key;
         my %res = $response;
         if $response<success> {
             my $json-string = $response<content>.decode;
@@ -65,7 +65,7 @@ class WWW::Ollama::HTTPClient {
 
     method delete(Str $path, %data? is copy, :%headers = {}) {
         %headers<Content-Type> //= 'application/json';
-        %headers<Authorization> = "Bearer $!api-key" with $!api-key;
+        %headers<Authorization> //= "Bearer $!api-key" with $!api-key;
         my $response = HTTP::Tiny.delete(self.base-url ~ $path, :%headers, content => to-json(%data, :!pretty));
         my %res = $response;
         if $response<success> {
@@ -77,7 +77,7 @@ class WWW::Ollama::HTTPClient {
 
     method post(Str $path, %data, :%headers = {}) {
         %headers<Content-Type> //= 'application/json';
-        %headers<Authorization> = "Bearer $!api-key" with $!api-key;
+        %headers<Authorization> //= "Bearer $!api-key" with $!api-key;
         my $response = HTTP::Tiny.post(self.base-url ~ $path, :%headers, content => to-json(%data, :!pretty));
         my %res = $response;
         if $response<success> {
