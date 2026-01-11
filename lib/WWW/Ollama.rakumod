@@ -96,6 +96,10 @@ sub ollama-model-info(:$model = Whatever, :$format = Whatever, :$client = Whatev
     return ollama-client('', path => 'model-info', :$model, :$format, :$client);
 }
 
+sub ollama-embedding($input, :$format = Whatever, :$client = Whatever) is export {
+    return ollama-client($input, path => 'embedding', :$format, :$client);
+}
+
 sub ollama-completion($input, :$model = Whatever, :$format = Whatever, :$client = Whatever, *%args) is export {
     return ollama-client($input, path => 'completion', :$model, :$format, :$client, |%args);
 }
