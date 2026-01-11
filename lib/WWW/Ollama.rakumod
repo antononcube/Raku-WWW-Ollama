@@ -3,6 +3,7 @@ use v6.d;
 unit module WWW::Ollama;
 
 use WWW::Ollama::Client;
+use JSON::Fast;
 
 #| Access to Ollama client 
 proto sub ollama-client(
