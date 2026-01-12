@@ -6,10 +6,10 @@
 [![https://raku.land/zef:antononcube/WWW::Ollama](https://raku.land/zef:antononcube/WWW::Ollama/badges/version)](https://raku.land/zef:antononcube/WWW::Ollama)
 
 
-Raku package for accessing [Ollama](https://ollama.com) models.
+Raku package for accessing [Ollama](https://ollama.com) models. (Ollama models can be run "locally" on user's computer.)
 
 The implementation is based in the Ollama's API, [Ol1], and observing (and trying to imitate) the 
-Ollama client of Wolfram Language.
+Ollama client of Wolfram Language (WL).
 
 The package has the following features:
 
@@ -56,9 +56,36 @@ ollama-client --help
 #   ollama-client [<words> ...] [--path=<Str>] [-m|--model=<Str>] [-f|--format=<Str>] -- Ollama client invocation.
 #   
 #     --path=<Str>         Path, one of 'completion', 'chat', 'embedding', 'model-info', 'list-models', or 'list-running-models'. [default: 'completion']
-#     -m|--model=<Str>     Model to use. [default: 'gemma3:1b']
+#     -m|--model=<Str>     Model to use. [default: 'Whatever']
 #     -f|--format=<Str>    Format of the result; one of "json", "hash", "values", or "Whatever". [default: 'Whatever']
 ```
+
+-----
+
+## Design and implementation details
+
+### Separate OOP and functional interfaces
+
+- From the very beginning was decided to have an Object-Oriented Programming (OOP) implementation, not a Functional Programming (FP) one.
+  - The implementation of "WWW::OpenAI", "WWW::Gemini", etc. are FP-based or FP-inspired.
+- A functional interface / front-end is, of course, desirable.
+  - The functions `ollama-list-models`, `ollama-model-info`, `ollama-embedding`, `ollama-completion`, `ollama-chat-completion` use the umbrella function `ollama-client`.
+  - The umbrella function `ollama-client`, in turn, has an optional argument `:$client` that takes `WWW::Ollama::Client` objects or `Whatever`.
+    - If the value is `Whatever` then a new `WWW::Ollama::Client` object is created.
+
+### Automatic start and download
+
+- Initially, the idea was to have a "seamless" experience. (As in WL). In other words, these steps are automatic:
+  - The running of the executable `ollama` is detected 
+  - If not running, then the executable `ollama` is located and started
+  - The LLM model specified in the request is downloaded (if not available already.)
+- From a certain sysadmin point of view the "seamless" run of `ollama` and model downloading is not that great.
+  - Say, at a certain organization Jupyter notebooks that have "WWW::Ollama" setup are mass-deployed.
+    - This might produce too much internet traffic because of the LLM models being downloaded.
+  - So, now by default the automatic start is disabled if a `WWW::Ollama::Client.new()` is used.
+    - To enable it, use `WWW::Ollama::Client.new(:ensure-running)`.
+- Also, there was the idea to have the Ollama executables for different platforms to be part of the package. (Placed in "./resources".) 
+  - But, that would make the package too big, ≈95MB.
 
 -----
 
@@ -72,7 +99,10 @@ ollama-client --help
     - [ ] TODO Automatic discovery and use of OLLAMA_API_KEY 
   - [X] DONE Functional interface 
     - I.e. without the need to explicitly make a client object.
-  - [ ] TODO Refactor to simpler code
+  - [ ] TODO Refactor
+    - [ ] TODO Change the streaming method to use the output of "HTTP::Tiny"
+    - [ ] TODO Review and simplify the code
+      - There are, probably, too many classes.
 - [ ] TODO CLI
   - [X] DONE MVP
   - [ ] TODO Detect JSON file with valid chat records
@@ -85,8 +115,8 @@ ollama-client --help
 - [ ] TODO Documentation
   - [X] DONE Basic usage script
   - [X] DONE Basic usage notebook
-  - [ ] TODO Using via the LLM-function framework
-  - [ ] TODO Benchmarking
+  - [X] DONE Using via the LLM-function framework
+  - [ ] TODO Benchmarking over DSL translations
   - [ ] TODO Demo video
 
 -----
