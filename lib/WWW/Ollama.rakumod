@@ -12,6 +12,7 @@ proto sub ollama-client(
         :m(:$model) = Whatever,         #= Model to use, a string or Whatever.
         :f(:$format) = Whatever,        #= Format of the result; one of "json", "hash", "values", or Whatever.
         :$client = Whatever,            #= A WWW::Ollama::Client object or Whatever.
+        :$ensure-running = False,       #= Whether to ensure that Ollama executable / service is running or not.
          ) is export {*}
 
 multi sub ollama-client(
@@ -20,6 +21,7 @@ multi sub ollama-client(
         :m(:$model) is copy = Whatever,
         :f(:$format) is copy = Whatever,
         :$client is copy = Whatever,
+        :$ensure-running = False,
         *%args
                         ) {
     # Process model
@@ -33,7 +35,7 @@ multi sub ollama-client(
     unless $format ~~ Str:D;
 
     # Process client
-    if $client.isa(Whatever) { $client = WWW::Ollama::Client.new }
+    if $client.isa(Whatever) { $client = WWW::Ollama::Client.new(:$ensure-running) }
     die 'The argument $client is expected to be a WWW::Ollama::Client object or Whatever.'
     unless $client ~~ WWW::Ollama::Client:D;
 
@@ -41,18 +43,18 @@ multi sub ollama-client(
     my $ans;
     given $path.lc {
         when $_ ∈ <list-models models> {
-            $ans = $client.list-models
+            $ans = $client.list-models(:$ensure-running)
         }
         when $_ ∈ <model-info> {
-            $ans = $client.model-info(:$model)
+            $ans = $client.model-info(:$model, :$ensure-running)
         }
         when $_ ∈ <completion generation> {
             my %body = :$model, prompt => $input, :!stream, |%args;
-            $ans = $client.completion(%body);
+            $ans = $client.completion(%body, :$ensure-running);
         }
         when $_ ∈ <embed embedding embeddings> {
             my %body = :$model, :$input, |%args;
-            $ans = $client.embedding(%body);
+            $ans = $client.embedding(%body, :$ensure-running);
         }
         when $_ ∈ <chat chat-completion> {
             my @messages = do given $input {
@@ -70,7 +72,7 @@ multi sub ollama-client(
             }
 
             my %body = :$model, :@messages, |%args;
-            $ans = $client.chat(%body)
+            $ans = $client.chat(%body, :$ensure-running)
         }
         default {
             die 'Do not know how to process the value of the $path argument.'
@@ -88,16 +90,16 @@ multi sub ollama-client(
     }
 }
 
-sub ollama-list-models(:$format = Whatever, :$client = Whatever) is export {
-    return ollama-client('', path => 'list-models', :$format, :$client);
+sub ollama-list-models(:$format = Whatever, :$client = Whatever, *%args) is export {
+    return ollama-client('', path => 'list-models', :$format, :$client, |%args);
 }
 
-sub ollama-model-info(:$model = Whatever, :$format = Whatever, :$client = Whatever) is export {
-    return ollama-client('', path => 'model-info', :$model, :$format, :$client);
+sub ollama-model-info(:$model = Whatever, :$format = Whatever, :$client = Whatever, *%args) is export {
+    return ollama-client('', path => 'model-info', :$model, :$format, :$client, |%args);
 }
 
-sub ollama-embedding($input, :$format = Whatever, :$client = Whatever) is export {
-    return ollama-client($input, path => 'embedding', :$format, :$client);
+sub ollama-embedding($input, :$format = Whatever, :$client = Whatever, *%args) is export {
+    return ollama-client($input, path => 'embedding', :$format, :$client, |%args);
 }
 
 sub ollama-completion($input, :$model = Whatever, :$format = Whatever, :$client = Whatever, *%args) is export {
