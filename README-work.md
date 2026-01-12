@@ -59,7 +59,7 @@ ollama-client --help
 ### Separate OOP and functional interfaces
 
 - From the very beginning was decided to have an Object-Oriented Programming (OOP) implementation, not a Functional Programming (FP) one.
-  - The implementation of "WWW::OpenAI", "WWW::Gemini", etc. are FP-based or FP-inspired.
+  - The implementations of ["WWW::OpenAI"](https://github.com/antononcube/Raku-WWW-OpenAI), ["WWW::Gemini"](https://github.com/antononcube/Raku-WWW-Gemini), etc. are FP-based or FP-inspired.
 - A functional interface / front-end is, of course, desirable.
   - The functions `ollama-list-models`, `ollama-model-info`, `ollama-embedding`, `ollama-completion`, `ollama-chat-completion` use the umbrella function `ollama-client`.
   - The umbrella function `ollama-client`, in turn, has an optional argument `:$client` that takes `WWW::Ollama::Client` objects or `Whatever`.
@@ -70,11 +70,11 @@ ollama-client --help
 - Initially, the idea was to have a "seamless" experience. (As in WL). In other words, these steps are automatic:
   - The running of the executable `ollama` is detected 
   - If not running, then the executable `ollama` is located and started
-  - The LLM model specified in the request is downloaded (if not available already.)
+  - The LLM model specified in the request is downloaded (if not available already)
 - From a certain sysadmin point of view the "seamless" run of `ollama` and model downloading is not that great.
   - Say, at a certain organization Jupyter notebooks that have "WWW::Ollama" setup are mass-deployed.
     - This might produce too much internet traffic because of the LLM models being downloaded.
-  - So, now by default the automatic start is disabled if a `WWW::Ollama::Client.new()` is used.
+  - So, now, by default, the automatic start is disabled if a `WWW::Ollama::Client.new()` is used.
     - To enable it, use `WWW::Ollama::Client.new(:ensure-running)`.
 - Also, there was the idea to have the Ollama executables for different platforms to be part of the package. (Placed in "./resources".) 
   - But, that would make the package too big, ≈95MB.
