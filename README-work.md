@@ -34,7 +34,89 @@ zef install WWW::Ollama
 
 -----
 
-## Usage examples
+## Usage
+
+Here is a list of usage design items:
+
+- The Ollama access is done via a client object, `WWW::Ollama::Client`
+- It is not necessary to use a `WWW::Ollama::Client` object explicitly
+- Instead the following functions / subs can be used:
+  - `ollama-base-url`
+  - `ollama-list-models`
+  - `ollama-model-info`
+  - `ollama-embedding`
+  - `ollama-completion`
+  - `ollama-chat-completion`
+  - `ollama-client` ("umbrella" function for all of the above)
+- The Ollama functions -- and client methods -- take the named option "format"
+  - With `format => 'hash'` more details of the request are obtained in Raku hashmap form
+- The Ollama host and port can be explicitly specified when a new `WWW::Ollama::Client` object is created
+- The method `WWW::Ollama::Client.new` takes the Boolean option (adverb) `:ensure-running`
+  - Which is set to false by default, i.e. `:!ensure-running`
+
+This diagram summarizes the Ollama client interaction (in this notebook):
+
+```mermaid
+flowchart LR
+
+    Gemma1b(gemma3:1b)
+    Gemma12b(gemma3:11b)
+    Gemma27b(gemma3:27b)
+    Lamma4(lamma4)
+    Etc("...")
+
+    OllamaRepo[(Ollama<br>LLM Repository)]
+    Ollama{{Ollama<br>executable}}
+
+    OClient("Ollama client<br>(Raku)")
+
+    Req[LLM request]
+    
+    LLMAval{LLM locally<br>available?}
+
+    Download[[Download LLM]]
+
+    Req --> OClient --> Ollama --> LLMAval 
+    LLMAval --> |No| Download
+    Download <-.-> OllamaRepo
+
+    NB>notebook]
+
+    NB --> Req
+    Ollama -.- Gemma1b
+    Ollama -.- Gemma12b
+    Ollama -.- Gemma27b
+    Ollama -.- Lamma4
+
+    subgraph LocalLLMs["Locally stored LLMs"]
+        Gemma1b
+        Gemma12b
+        Gemma27b
+        Lamma4
+        Etc
+    end   
+
+    IsRunning{"Is Ollama running?"}
+    EnsureVal{"ensure-running"}
+
+    IsRunning --> |No|EnsureVal --> |Yes|StartOllama[[Start Ollama executable]]
+
+    StartOllama -.-> Ollama
+
+    Download -.-> LocalLLMs
+    subgraph Raku["Raku session"]
+        OClient
+        Req
+        subgraph Ensure["Ensure running"]
+            IsRunning
+            EnsureVal
+            StartOllama
+        end
+        OClient <--> Ensure
+    end
+```
+
+### Usage examples
 
 For detailed usage examples see:
 
