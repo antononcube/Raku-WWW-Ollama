@@ -42,6 +42,9 @@ multi sub ollama-client(
     # Delegate request
     my $ans;
     given $path.lc {
+        when $_ ∈ <url base-url> {
+            return $client.http.base-url
+        }
         when $_ ∈ <list-models models> {
             $ans = $client.list-models(:$ensure-running)
         }
@@ -88,6 +91,10 @@ multi sub ollama-client(
         when $_ eq 'json' { to-json($ans, :pretty) }
         default { $ans }
     }
+}
+
+sub ollama-base-url(:$format = Whatever, :$client = Whatever, *%args) is export {
+    return ollama-client('', path => 'base-url', :$format, :$client, |%args);
 }
 
 sub ollama-list-models(:$format = Whatever, :$client = Whatever, *%args) is export {
