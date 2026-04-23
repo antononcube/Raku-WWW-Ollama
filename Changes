@@ -1,0 +1,4 @@
+Revision history of the Raku package "WWW::Ollama".
+
+0.0.6 2026-04-23
+    - Proper handling of image generation.
