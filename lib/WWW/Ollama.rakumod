@@ -85,6 +85,7 @@ multi sub ollama-client(
     # Result
     return do given $format.lc {
         when $_ ∈ <hash raku> { $ans }
+        when $_ eq 'values' && ($ans<image>:exists) { $ans<image> }
         when $_ eq 'values' && $path ∉ <list-models models> {
             $path ~~ /embed/ ?? $ans<embeddings> !! $ans<content>
         }
