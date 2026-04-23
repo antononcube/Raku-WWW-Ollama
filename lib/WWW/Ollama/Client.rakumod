@@ -228,6 +228,7 @@ class WWW::Ollama::Client {
                     durations     => WWW::Ollama::Utilities::to-seconds(%data),
                     throughput    => WWW::Ollama::Utilities::throughput(%data),
                 ;
+                if %data<image>:exists { %result<image> = %data<image> }
                 %result<context> = %data<context> unless %result<role>.defined;
                 return %result;
             }
