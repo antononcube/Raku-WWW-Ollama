@@ -1,0 +1,31 @@
+use v6.d;
+use WWW::Ollama::Client;
+use Test;
+
+plan *;
+
+subtest {
+    my $ollama = WWW::Ollama::Client.new;
+
+    my %body =
+            model => 'x/z-image-turbo',
+            prompt => "Make an image of a raccon stealing food from cats.",
+            ;
+
+    my $ans = $ollama.completion(%body);
+    isa-ok $ans, Map:D, 'expected result type';
+    is $ans<image>:exists, True, 'image key exists';
+
+    # if $ans<image> {
+    #    spurt $*CWD ~ '/04-image-generations-base64.txt', $ans<image>;
+    # }
+
+    # To render the generated image in Jupyter:
+    # my $img = slurp('../04-image-generations-base64.txt');
+    # $img.chars
+
+    # #% markdown
+    # #from-base64($img)
+}, 'chat generation, single message image generation';
+
+done-testing;
