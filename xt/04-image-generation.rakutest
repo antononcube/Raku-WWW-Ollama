@@ -28,4 +28,16 @@ subtest {
     # #from-base64($img)
 }, 'chat generation, single message image generation';
 
+subtest {
+
+    isa-ok
+            ollama-completion(
+                    'Make an image of android heads placed on shelf cabinet.',
+                    model => 'x/z-image-turbo',
+                    format => 'values'),
+            Str:D,
+            "top level sub returns a string with format => 'values'";
+
+}, 'top level sub';
+
 done-testing;
