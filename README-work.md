@@ -123,6 +123,16 @@ For detailed usage examples see:
 - [Basic-usage.raku](./examples/Basic-usage.raku) (script)
 - [Basic-usage.ipynb](./docs/Basic-usage.ipynb) (notebook)
 
+-------
+
+## Default models
+
+Default models can be specified with the operating system environmental variables:
+
+- `OLLAMA_DEFAULT_MODEL`
+- `OLLAMA_DEFAULT_IMAGE_GENERATION_MODEL`
+- `OLLAMA_DEFAULT_EMBEDDING_MODEL`
+
 -----
 
 ## CLI
