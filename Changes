@@ -1,4 +1,10 @@
 Revision history of the Raku package "WWW::Ollama".
 
+0.0.7  2026-06-18
+    - Using env variables to obtain default models.
+        - OLLAMA_DEFAULT_MODEL
+        - OLLAMA_DEFAULT_IMAGE_GENERATION_MODEL
+        - OLLAMA_DEFAULT_EMBEDDING_MODEL
+
 0.0.6 2026-04-23
     - Proper handling of image generation.
