@@ -5,6 +5,17 @@ unit module WWW::Ollama;
 use WWW::Ollama::Client;
 use JSON::Fast;
 
+#| Get default model
+our sub default-model(Bool:D :$image-generation = False, Bool:D :$embedding = False) {
+    return do if $embedding {
+        %*ENV<OLLAMA_DEFAULT_EMBEDDING_MODEL>:exists ?? %*ENV<OLLAMA_DEFAULT_EMBEDDING_MODEL> !! 'nomic-embed-text'
+    } elsif $image-generation {
+        %*ENV<OLLAMA_DEFAULT_IMAGE_GENERATION_MODEL>:exists ?? %*ENV<OLLAMA_DEFAULT_IMAGE_GENERATION_MODEL> !! 'x/z-image-turbo:latest'
+    } else {
+        %*ENV<OLLAMA_DEFAULT_MODEL>:exists ?? %*ENV<OLLAMA_DEFAULT_MODEL> !! 'llama3.2:latest'
+    }
+}
+
 #| Access to Ollama client 
 proto sub ollama-client(
         $input,
@@ -25,7 +36,7 @@ multi sub ollama-client(
         *%args
                         ) {
     # Process model
-    if $model.isa(Whatever) { $model = $path.lc ∈ <embed embedding embeddings> ?? 'nomic-embed-text' !! 'gemma3:1b' }
+    if $model.isa(Whatever) { $model = default-model(embedding => $path.lc ∈ <embed embedding embeddings>) }
     die 'The argument $model is expected to be a string or Whatever.'
     unless $model ~~ Str:D;
 
