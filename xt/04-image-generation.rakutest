@@ -1,5 +1,5 @@
 use v6.d;
-use WWW::Ollama::Client;
+use WWW::Ollama;
 use Test;
 
 plan *;
@@ -33,7 +33,7 @@ subtest {
     isa-ok
             ollama-completion(
                     'Make an image of android heads placed on shelf cabinet.',
-                    model => 'x/z-image-turbo',
+                    model => 'x/z-image-turbo:latest',
                     format => 'values'),
             Str:D,
             "top level sub returns a string with format => 'values'";
