@@ -136,17 +136,19 @@ sub ollama-chat-completion($input, :$model = Whatever, :$format = Whatever, :$cl
     return ollama-client($input, path => 'chat', :$model, :$format, :$client, |%args);
 }
 #| Evaluate a System One structured-decision request.
-sub system-one-evaluate(%request, :$client = Whatever, Str :$idempotency-key = q[]) is export {
+sub ollama-system-one-evaluate(%request, :$client is copy = Whatever, Str :$idempotency-key = q[]) is export {
     $client = WWW::Ollama::SystemOne.new if $client.isa(Whatever);
     die q[The argument $client is expected to be a WWW::Ollama::SystemOne object or Whatever.]
-        unless $client ~~ WWW::Ollama::SystemOne:D;
+    unless $client ~~ WWW::Ollama::SystemOne:D;
     $client.evaluate(%request, :$idempotency-key);
 }
 
+#`[ Redundant for now, would be nice to list just the SystemOne compatible models.
 #| List models exposed by the System One API.
-sub system-one-models(:$client = Whatever) is export {
+sub ollama-system-one-models(:$client is copy = Whatever) is export {
     $client = WWW::Ollama::SystemOne.new if $client.isa(Whatever);
     die q[The argument $client is expected to be a WWW::Ollama::SystemOne object or Whatever.]
-        unless $client ~~ WWW::Ollama::SystemOne:D;
+    unless $client ~~ WWW::Ollama::SystemOne:D;
     $client.models;
 }
+]
