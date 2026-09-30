@@ -132,6 +132,9 @@ Default models can be specified with the operating system environmental variable
 - `OLLAMA_DEFAULT_MODEL`
 - `OLLAMA_DEFAULT_IMAGE_GENERATION_MODEL`
 - `OLLAMA_DEFAULT_EMBEDDING_MODEL`
+- `OLLAMA_DEFAULT_SYSTEMONE_MODEL`
+
+---
 
 ## System One structured decisions
 
@@ -153,6 +156,9 @@ my $result = $ollama.system-one({
     },
 });
 say $result<answers><team><choice>;
+```
+```
+# billing
 ```
 
 Use `choice`, `noul`, or `score` questions. Local Ollama permits up to 64 questions per request; choice and score questions require 2–26 criteria. The opt-in integration test at `xt/05-system-one.rakutest` runs only with `OLLAMA_SYSTEM_ONE_TEST=1` and only when Nimble has already been pulled.

@@ -132,6 +132,35 @@ Default models can be specified with the operating system environmental variable
 - `OLLAMA_DEFAULT_MODEL`
 - `OLLAMA_DEFAULT_IMAGE_GENERATION_MODEL`
 - `OLLAMA_DEFAULT_EMBEDDING_MODEL`
+- `OLLAMA_DEFAULT_SYSTEMONE_MODEL`
+
+---
+
+## System One structured decisions
+
+Nimble and other Ollama decision models use Ollama’s non-streaming `/v1/systemone` endpoint. This package uses local Ollama by default, requires no API key, and defaults the model to `nimble`. Nimble requires Ollama 0.35 or newer.
+
+```raku
+use WWW::Ollama::Client;
+
+my $ollama = WWW::Ollama::Client.new(:ensure-running);
+my $result = $ollama.system-one({
+    model => 'nimble',
+    state => { message => q[I was charged twice.] },
+    questions => {
+        team => {
+            type => q[choice],
+            instructions => q[Choose the reviewing team.],
+            criteria => { billing => q[Payments and refunds], support => q[Technical help] },
+        },
+    },
+});
+say $result<answers><team><choice>;
+```
+
+Use `choice`, `noul`, or `score` questions. Local Ollama permits up to 64 questions per request; choice and score questions require 2–26 criteria. The opt-in integration test at `xt/05-system-one.rakutest` runs only with `OLLAMA_SYSTEM_ONE_TEST=1` and only when Nimble has already been pulled.
+
+The external hosted System One service remains available only when explicitly requested with `WWW::Ollama::SystemOne.new(provider => 'hosted', ...)`; that mode uses `SYSTEM_ONE_API_KEY` and `SYSTEM_ONE_BASE_URL`.
 
 -----
 
