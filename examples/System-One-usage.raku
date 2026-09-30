@@ -90,8 +90,8 @@ $result = $client.system-one({
             instructions => 'Which topic-extraction method is requested?',
             criteria => {
                 nnmf => 'Non-negative matrix factorization.',
-                lda => 'Latent Dirichlet allocation.',
-                lsa => 'Latent semantic analysis.',
+                svd => 'Singular value decomposition.',
+                ica => 'Independent component analysis.',
             },
         },
         number-of-topics => {
