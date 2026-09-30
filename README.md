@@ -47,6 +47,7 @@ Here is a list of usage design items:
   - `ollama-embedding`
   - `ollama-completion`
   - `ollama-chat-completion`
+  - `ollama-system-one-evaluate`
   - `ollama-client` ("umbrella" function for all of the above)
 - The Ollama functions -- and client methods -- take the named option "format"
   - With `format => 'hash'` more details of the request are obtained in Raku hashmap form
