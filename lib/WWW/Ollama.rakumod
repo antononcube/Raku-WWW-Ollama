@@ -106,26 +106,32 @@ multi sub ollama-client(
     }
 }
 
+#| Ollama's base URL.
 sub ollama-base-url(:$format = Whatever, :$client = Whatever, *%args) is export {
     return ollama-client('', path => 'base-url', :$format, :$client, |%args);
 }
 
+#| List available Ollama (local) models.
 sub ollama-list-models(:$format = Whatever, :$client = Whatever, *%args) is export {
     return ollama-client('', path => 'list-models', :$format, :$client, |%args);
 }
 
+#| Give information about a model.
 sub ollama-model-info(:$model = Whatever, :$format = Whatever, :$client = Whatever, *%args) is export {
     return ollama-client('', path => 'model-info', :$model, :$format, :$client, |%args);
 }
 
+#| Evaluate an embedding request.
 sub ollama-embedding($input, :$format = Whatever, :$client = Whatever, *%args) is export {
     return ollama-client($input, path => 'embedding', :$format, :$client, |%args);
 }
 
+#| Evaluate a completion request.
 sub ollama-completion($input, :$model = Whatever, :$format = Whatever, :$client = Whatever, *%args) is export {
     return ollama-client($input, path => 'completion', :$model, :$format, :$client, |%args);
 }
 
+#| Evaluate a chat completion request.
 sub ollama-chat-completion($input, :$model = Whatever, :$format = Whatever, :$client = Whatever, *%args) is export {
     return ollama-client($input, path => 'chat', :$model, :$format, :$client, |%args);
 }
