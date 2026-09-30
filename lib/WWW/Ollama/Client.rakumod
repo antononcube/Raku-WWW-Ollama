@@ -7,6 +7,7 @@ use WWW::Ollama::ExecResolver;
 use WWW::Ollama::RequestNormalizer;
 use WWW::Ollama::StreamingParser;
 use WWW::Ollama::ProcessManager;
+use WWW::Ollama::SystemOne;
 
 # Public client facade.
 class WWW::Ollama::Client {
@@ -16,12 +17,14 @@ class WWW::Ollama::Client {
     has WWW::Ollama::RequestNormalizer $.normalizer;
     has WWW::Ollama::StreamingParser $.parser .= new;
     has WWW::Ollama::ProcessManager $.process handles <start stop>;
+    has WWW::Ollama::SystemOne $!system-one-client;
     has Bool:D $.ensure-running is rw = False;
 
     submethod BUILD(:$host, :$port, :$use-system-ollama, :$start-ollama,
                     Bool:D :$echo = False,
                     Bool:D :$!ensure-running = False,
-                    :auth-key(:$api-key) = Whatever
+                    :auth-key(:$api-key) = Whatever,
+                    :$system-one-provider = 'ollama', :$system-one-base-url = q[], :$system-one-api-key = q[]
                     ) {
         $!http //= WWW::Ollama::HTTPClient.new(:$host, :$port, :$api-key);
 
@@ -41,6 +44,13 @@ class WWW::Ollama::Client {
             context-length   => $!config.get('context-length'),
             :$echo
         );
+        $!system-one-client //= do if $system-one-provider eq 'ollama' {
+            WWW::Ollama::SystemOne.new(provider => 'ollama', http => $!http);
+        } else {
+            WWW::Ollama::SystemOne.new(
+                provider => $system-one-provider, :base-url($system-one-base-url), :api-key($system-one-api-key)
+            );
+        };
     }
 
     multi method host() { $!http.host }
@@ -184,6 +194,18 @@ class WWW::Ollama::Client {
     method models-chat() { <gemma3:1b llama3 qwen2.5:7b> } # stubbed helper
     method models-embedding() { <nomic-embed-text all-minilm> }
     method models-remote(:$type = 'all') { ["remote-$type list not implemented"] }
+
+    #| Evaluate structured decisions using local Ollama by default.
+    method system-one(%request is copy, Str :$idempotency-key = q[], :$ensure-running = $!ensure-running) {
+        self.ensure-ollama-running if $ensure-running && $!system-one-client.provider eq 'ollama';
+        $!system-one-client.evaluate(%request, :$idempotency-key);
+    }
+
+    #| List models available through the configured System One provider.
+    method system-one-models(:$ensure-running = $!ensure-running) {
+        self.ensure-ollama-running if $ensure-running && $!system-one-client.provider eq 'ollama';
+        $!system-one-client.models
+    }
 
     # Internal helpers
     method !do-chat-or-completion(Str $path, %payload, Bool $stream, Str $call) {

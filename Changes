@@ -1,5 +1,10 @@
 Revision history of the Raku package "WWW::Ollama".
 
+0.0.8  2026-09-30
+    - Added System One structured-decision API support via WWW::Ollama::SystemOne.
+    - Added local Ollama decision-model support at /v1/systemone; hosted configuration is explicit.
+    - Added an opt-in Nimble integration test gated by OLLAMA_SYSTEM_ONE_TEST.
+
 0.0.7  2026-06-18
     - Using env variables to obtain default models.
         - OLLAMA_DEFAULT_MODEL

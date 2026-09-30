@@ -1,7 +1,7 @@
 {
     "name": "WWW::Ollama",
     "description": "WWW::Ollama provides access to the Ollama models (https://ollama.com).",
-    "version": "0.0.7",
+    "version": "0.0.8",
     "authors": [
         "Anton Antonov"
     ],
@@ -26,6 +26,7 @@
         "WWW::Ollama::ProcessManager": "lib/WWW/Ollama/ProcessManager.rakumod",
         "WWW::Ollama::RequestNormalizer": "lib/WWW/Ollama/RequestNormalizer.rakumod",
         "WWW::Ollama::StreamingParser": "lib/WWW/Ollama/StreamingParser.rakumod",
+        "WWW::Ollama::SystemOne": "lib/WWW/Ollama/SystemOne.rakumod",
         "WWW::Ollama::Utilities": "lib/WWW/Ollama/Utilities.rakumod"
     },
     "license": "Artistic-2.0",

@@ -1,0 +1,13 @@
+use v6.d;
+use Test;
+use WWW::Ollama::SystemOne;
+use WWW::Ollama::Client;
+
+my $system-one = WWW::Ollama::SystemOne.new(provider => 'hosted', base-url => 'https://example.invalid/v1/', api-key => 'test-key');
+is $system-one.http.base-url, 'https://example.invalid/v1', 'trailing slash is removed from base URL';
+dies-ok { $system-one.evaluate({ questions => {} }) }, 'state is validated before a request is sent';
+dies-ok { $system-one.evaluate({ state => 'hello', questions => { route => { type => 'unknown' } } }) }, 'question type is validated before a request is sent';
+dies-ok { $system-one.evaluate({ state => 'hello', questions => { priority => { type => 'score', criteria => ['low'] } } }) }, 'score criteria are validated before a request is sent';
+
+ok WWW::Ollama::Client.new(system-one-base-url => 'https://example.invalid/v1') ~~ WWW::Ollama::Client:D, 'existing client accepts System One configuration';
+done-testing;

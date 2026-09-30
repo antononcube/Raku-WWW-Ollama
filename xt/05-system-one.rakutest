@@ -1,0 +1,33 @@
+use v6.d;
+use Test;
+use WWW::Ollama::Client;
+unless %*ENV<OLLAMA_SYSTEM_ONE_TEST>:exists && %*ENV<OLLAMA_SYSTEM_ONE_TEST>.chars {
+    plan 1;
+    skip 'Set OLLAMA_SYSTEM_ONE_TEST=1 to run the local Nimble integration test.', 1;
+    exit;
+}
+
+my $client = WWW::Ollama::Client.new(:ensure-running);
+my @models = $client.list-models(:ensure-running);
+unless @models.first({ ($_<name> // '') eq any <nimble nimble:latest> }) {
+    plan 1;
+    skip 'Install Nimble with: ollama pull nimble', 1;
+    exit;
+}
+
+my %request = (
+    model => 'nimble',
+    state => { message => 'I was charged twice for one order.' },
+    questions => {
+        team => {
+            type => 'choice',
+            instructions => 'Choose the reviewing team.',
+            criteria => { billing => 'Payments and refunds', support => 'Technical help' },
+        },
+    },
+);
+my $result = $client.system-one(%request, :ensure-running);
+ok $result<answers>:exists, 'Nimble returns answers through Ollama System One';
+ok $result<answers><team><choice>:exists, 'choice answer is returned';
+ok $result<model>:exists, 'resolved model is returned';
+done-testing;
