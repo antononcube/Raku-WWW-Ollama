@@ -71,6 +71,8 @@ say '=' x 100;
 say 'LSAMon parameters';
 say '-' x 100;
 
+# SystemOne cannot replace QAS like "ML::FindTextualAnswer" -- SystemOne is "just" a classifier.
+
 $t0 = now;
 $result = $client.system-one({
     model => 'nimble',
