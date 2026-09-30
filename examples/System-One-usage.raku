@@ -1,8 +1,10 @@
 use v6.d;
+use WWW::Ollama;
 use WWW::Ollama::Client;
 
 # Requires Ollama 0.35+ and a locally pulled model: ollama pull nimble
 
+#====================================================================================================
 say '=' x 100;
 say 'Documentation example';
 say '-' x 100;
@@ -11,7 +13,7 @@ my $client = WWW::Ollama::Client.new(:ensure-running);
 
 my $t0 = now;
 
-my $result = $client.system-one({
+my $result = ollama-system-one-evaluate({
     model => 'nimble',
     state => { message => 'I was charged twice for one order.' },
     questions => {
