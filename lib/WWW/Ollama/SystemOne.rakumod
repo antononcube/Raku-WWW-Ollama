@@ -11,7 +11,7 @@ class WWW::Ollama::SystemOne {
     submethod BUILD(Str :$provider = 'ollama', Str :$base-url = '', Str :$api-key = '', :$http) {
         die 'System One provider must be ollama or hosted.' unless $provider eq any <ollama hosted>;
         $!provider = $provider;
-        if $http.defined { $!http = $http; return; }
+        with $http { $!http = $http; return; }
         if $provider eq 'hosted' {
             my $url = $base-url || (%*ENV<SYSTEM_ONE_BASE_URL> // 'https://system-one.dev/v1');
             my $key = $api-key || (%*ENV<SYSTEM_ONE_API_KEY> // '');
@@ -24,7 +24,7 @@ class WWW::Ollama::SystemOne {
 
     method evaluate(%request is copy, Str :$idempotency-key = '') {
         self!validate-request(%request);
-        %request<model> //= 'nimble' if $!provider eq 'ollama';
+        %request<model> //= (%*ENV<OLLAMA_DEFAULT_SYSTEMONE_MODEL> // 'nimble') if $!provider eq 'ollama';
         my %headers;
         %headers<Idempotency-Key> = $idempotency-key if $idempotency-key.chars;
         my $path = $!provider eq 'ollama' ?? '/v1/systemone' !! '/systemone';
